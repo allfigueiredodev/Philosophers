@@ -1,39 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philosophers_utils.c                               :+:      :+:    :+:   */
+/*   actions.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aperis-p <aperis-p@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/23 12:40:55 by aperis-p          #+#    #+#             */
-/*   Updated: 2024/01/23 12:40:58 by aperis-p         ###   ########.fr       */
+/*   Created: 2024/01/23 13:30:55 by aperis-p          #+#    #+#             */
+/*   Updated: 2024/01/23 15:23:18 by aperis-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-long	philo_atoi(const char *str)
-{
-	int		i;
-	int		sign;
-	int	result;
+// void	pick_a_fork(t_data *data)
+// {
+// 	printf("%s%s %d has taken a fork\n%s", );
+// 	//timestamp_in_ms X has taken a fork
+// }
 
-	result = 0;
-	sign = 1;
-	i = 0;
-	while (str[i] == ' ' || str[i] == '\t' || str[i] == '\n'
-		|| str[i] == '\v' || str[i] == '\f' || str[i] == '\r')
-		i++;
-	if (str[i] == '-' || str[i] == '+')
-	{
-		if (str[i] == '-')
-			sign *= -1;
-		i++;
-	}
-	while (str[i] >= '0' && str[i] <= '9')
-	{
-		result = result * 10 + (str[i] - '0');
-		i++;
-	}
-	return (sign * result);
-}
+// void	eat(t_data *data)
+// {
+// 	//timestamp_in_ms X is eating
+// }
+	
+// void	sleep(t_data *data)
+// {
+// 	//timestamp_in_ms X is sleeping
+// }
+
+// void	think(t_data *data)
+// {
+// 	//timestamp_in_ms X is thinking
+// }
+
+// void	die(t_data *data)
+// {
+// 	//timestamp_in_ms X died
+// }

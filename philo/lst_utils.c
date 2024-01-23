@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   lst_utils.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aperis-p <aperis-p@student.42sp.org.br>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/01/23 12:40:35 by aperis-p          #+#    #+#             */
+/*   Updated: 2024/01/23 15:22:36 by aperis-p         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philosophers.h"
 
 int	dc_lstsize(t_dclist *lst)
@@ -72,7 +84,8 @@ t_dclist	*lst_new_node(int id)
 	if (!node)
 		return (NULL);
 	node->philo.philo_id = id;
-	node->philo.left_fork_id = id;
+	node->philo.left_fork.id = id;
+	node->philo.left_fork.available = true;
 	node->prev = node;
 	node->next = node;
 	return (&*node);

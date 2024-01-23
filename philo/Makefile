@@ -2,7 +2,8 @@ NAME = philo
 MAKE = make
 CC = cc
 FLAGS = -Wall -Werror -Wextra -g3
-SRC = philosophers.c philosophers_utils.c philosophers_init.c lst_utils.c
+SRC = philosophers.c philosophers_utils.c philosophers_init.c lst_utils.c \
+actions.c
 
 OBJS = $(SRC:.c=.o)
 

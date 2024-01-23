@@ -10,6 +10,15 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/time.h>
+
+typedef enum t_bool
+{
+	false,
+	true
+} t_bool;
 
 typedef enum t_state
 {
@@ -20,12 +29,11 @@ typedef enum t_state
 	DEAD
 } t_state;
 
-typedef struct s_dclist
+typedef struct s_forks
 {
-	t_philo			philo;
-	struct s_dclist	*next;
-	struct s_dclist	*prev;
-} t_dclist;
+	int		id;
+	t_bool	available;
+} t_forks;
 
 typedef struct s_args
 {
@@ -42,9 +50,16 @@ typedef struct s_philo
 	t_state state;
 	int		meals_ate;
 	int		last_meal;
-	int		left_fork_id; // this should point to a fork struct
-	int		right_fork_id; // this should point to a fork struct
+	t_forks		left_fork;
+	t_forks		right_fork;
 } t_philo;
+
+typedef struct s_dclist
+{
+	t_philo			philo;
+	struct s_dclist	*next;
+	struct s_dclist	*prev;
+} t_dclist;
 
 typedef struct s_data
 {

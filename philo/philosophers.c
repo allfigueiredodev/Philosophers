@@ -6,7 +6,7 @@
 /*   By: aperis-p <aperis-p@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/18 15:02:31 by aperis-p          #+#    #+#             */
-/*   Updated: 2024/01/22 23:59:27 by aperis-p         ###   ########.fr       */
+/*   Updated: 2024/01/23 15:45:00 by aperis-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,17 @@
 
 void set_right_fork(t_data *data)
 {
-	
+	t_dclist *head;
+	t_dclist *temp;
+
+	head = data->table;
+	while(!head->philo.right_fork.id)
+	{
+		temp = head->next;
+		head->philo.right_fork.id = head->prev->philo.left_fork.id;
+		head->philo.right_fork.available = true;
+		head = temp;
+	}
 }
 
 void init_table(t_data *data)
@@ -35,18 +45,28 @@ void init_table(t_data *data)
 int main (int argc, char **argv)
 {
 	t_data data;
+	struct timeval time;
 	
 	if(argc < 5 || argc > 6 || !init_philo(&data, argv))
 	{
 		printf("%sNot enought arguments!%s\n", RED, DFT);
-		return (0); 
+		return (0);
 	}
 	init_table(&data);
-	printf("%snbr of philos:%s %d\n", RED, DFT, data.args.nbr_of_philos);
-	printf("%stime to die:%s %d\n", GREEN, DFT, data.args.time_to_die);
-	printf("%stime to eat:%s %d\n", YELLOW, DFT, data.args.time_to_eat);
-	printf("%stime to sleep:%s %d\n", BLUE, DFT, data.args.time_to_sleep);
-	printf("%smeals must eat:%s %d\n", MAGENTA, DFT, data.args.meals_must_eat);
+	// printf("Time.tv_sec: %d\n", (int)time.tv_sec);
+	// printf("Time.tv_usec: %d\n", (int)time.tv_usec);
+	printf("Time: %d\n", gettimeofday(&time, NULL));
+	printf("Time.tv_sec: %d\n", (((int)time.tv_sec * 1000) + ((int)time.tv_usec / 1000)));
+	// printf("Time.tv_usec: %d\n", (int)time.tv_usec);
+	usleep(900000);
+	printf("Time: %d\n", gettimeofday(&time, NULL));
+	printf("Time.tv_sec: %d\n", (((int)time.tv_sec * 1000) + ((int)time.tv_usec / 1000)));
+	// printf("Time.tv_usec: %d\n", (int)time.tv_usec);
+	// printf("%snbr of philos:%s %d\n", RED, DFT, data.args.nbr_of_philos);
+	// printf("%stime to die:%s %d\n", GREEN, DFT, data.args.time_to_die);
+	// printf("%stime to eat:%s %d\n", YELLOW, DFT, data.args.time_to_eat);
+	// printf("%stime to sleep:%s %d\n", BLUE, DFT, data.args.time_to_sleep);
+	// printf("%smeals must eat:%s %d\n", MAGENTA, DFT, data.args.meals_must_eat);
 }
 	
 // 	- number_of_philosophers: The number of philosophers and also the number
