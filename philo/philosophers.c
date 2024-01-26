@@ -6,26 +6,48 @@
 /*   By: aperis-p <aperis-p@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/18 15:02:31 by aperis-p          #+#    #+#             */
-/*   Updated: 2024/01/25 23:16:37 by aperis-p         ###   ########.fr       */
+/*   Updated: 2024/01/26 19:21:01 by aperis-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
+
+void run(t_data *data)
+{
+	t_dclist *head;
+	t_dclist *temp;
+	
+	head = data->table;
+	while(head->philo.philo_id != data->args.nbr_of_philos)
+	{
+		temp = head->next;
+		pick_a_fork(data, &head->philo);
+		head = temp;
+	}
+}
 
 t_health check_philo_health(t_data *data)
 {
 	t_health result;
 	t_dclist *head;
 	t_dclist *temp;
-
+	struct timeval current_time;
+	double current;
+	
+	gettimeofday(&current_time, NULL);
+	current = current_time.tv_sec * 1000.0 + current_time.tv_usec / 1000.0;
 	head = data->table;
 	result = (t_health){
 		.death_score = 0,
-		.death_score = 0
+		.eat_score = 0
 	};
 	while(head->philo.philo_id != data->args.nbr_of_philos)
 	{
 		temp = head->next;
+		if(!head->philo.last_meal)
+			head->philo.last_meal = data->simulation_start;
+		if(current - head->philo.last_meal >= data->args.time_to_die)
+			head->philo.state = DEAD;
 		if(head->philo.state == DEAD)
 			result.death_score++;
 		if(head->philo.meals_ate >= data->args.meals_must_eat)
@@ -53,9 +75,7 @@ void start_simulation(t_data *data)
 	data->simulation_start =  start.tv_sec * 1000.0 + start.tv_usec / 1000.0;
 	
 	while(!end_conditions(data))
-	{
-		
-	}
+		run(data);
 }
 
 void set_right_fork(t_data *data)
@@ -99,15 +119,19 @@ int main (int argc, char **argv)
 	}
 	init_table(&data);
 	start_simulation(&data);
-	pick_a_fork(&data);
-	// printf("%snbr of philos:%s %d\n", RED, DFT, data.args.nbr_of_philos);
-	// printf("%stime to die:%s %d\n", GREEN, DFT, data.args.time_to_die);
-	// printf("%stime to eat:%s %d\n", YELLOW, DFT, data.args.time_to_eat);
-	// printf("%stime to sleep:%s %d\n", BLUE, DFT, data.args.time_to_sleep);
-	// printf("%smeals must eat:%s %d\n", MAGENTA, DFT, data.args.meals_must_eat);
 }
-	
+		
 // 	- number_of_philosophers: The number of philosophers and also the number
+// of forks.
+// 	- time_to_die (in milliseconds): If a philosopher didn’t start eating time_to_die
+// milliseconds since the beginning of their last meal or the beginning of the simulation, they die.
+// 	- time_to_eat (in milliseconds): The time it takes for a philosopher to eat.
+// During that time, they will need to hold two forks.
+// 	- time_to_sleep (in milliseconds): The time a philosopher will spend sleeping.
+// 	- number_of_times_each_philosopher_must_eat (optional argument): If all
+// philosophers have eaten at least number_of_times_each_philosopher_must_eat
+// times, the simulation stops. If not specified, the simulation stops when a
+// philosopher dies.// 	- number_of_philosophers: The number of philosophers and also the number
 // of forks.
 // 	- time_to_die (in milliseconds): If a philosopher didn’t start eating time_to_die
 // milliseconds since the beginning of their last meal or the beginning of the simulation, they die.

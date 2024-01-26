@@ -38,7 +38,7 @@ typedef struct s_forks
 typedef struct s_args
 {
 	int nbr_of_philos;
-	int time_to_die;
+	double time_to_die;
 	int time_to_eat;
 	int time_to_sleep;
 	int meals_must_eat;
@@ -49,7 +49,7 @@ typedef struct s_philo
 	int		philo_id;
 	t_state state;
 	int		meals_ate;
-	int		last_meal;
+	double		last_meal;
 	t_forks		left_fork;
 	t_forks		right_fork;
 } t_philo;
@@ -64,7 +64,7 @@ typedef struct s_dclist
 typedef struct s_data
 {
 	t_args		args;
-	double			simulation_start;
+	double		simulation_start;
 	t_dclist	*table;
 } t_data;
 
@@ -83,5 +83,6 @@ int			dc_lstsize(t_dclist *lst);
 t_dclist	*dc_lst_last(t_dclist *lst);
 void		lst_prev_next(t_dclist **alst, t_dclist *new);
 t_dclist	*lst_new_node(int id);
-void		pick_a_fork(t_data *data);
+void		pick_a_fork(t_data *data, t_philo *philo);
+void		eat(t_data *data, t_philo *philo);
 
