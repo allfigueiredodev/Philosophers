@@ -6,7 +6,7 @@
 /*   By: aperis-p <aperis-p@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 12:40:35 by aperis-p          #+#    #+#             */
-/*   Updated: 2024/01/23 15:22:36 by aperis-p         ###   ########.fr       */
+/*   Updated: 2024/01/25 22:27:35 by aperis-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ t_dclist	*lst_new_node(int id)
 	node->philo.philo_id = id;
 	node->philo.left_fork.id = id;
 	node->philo.left_fork.available = true;
+	node->philo.state = THINKING;
 	node->prev = node;
 	node->next = node;
 	return (&*node);

@@ -64,9 +64,15 @@ typedef struct s_dclist
 typedef struct s_data
 {
 	t_args		args;
-	int			simulation_start;
+	double			simulation_start;
 	t_dclist	*table;
 } t_data;
+
+typedef struct s_health
+{
+	int eat_score;
+	int death_score;
+}	t_health;
 
 long		philo_atoi(const char *str);
 int			init_philo(t_data *data, char **argv);
@@ -77,3 +83,5 @@ int			dc_lstsize(t_dclist *lst);
 t_dclist	*dc_lst_last(t_dclist *lst);
 void		lst_prev_next(t_dclist **alst, t_dclist *new);
 t_dclist	*lst_new_node(int id);
+void		pick_a_fork(t_data *data);
+
