@@ -6,11 +6,27 @@
 /*   By: aperis-p <aperis-p@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/18 15:02:31 by aperis-p          #+#    #+#             */
-/*   Updated: 2024/01/26 19:21:01 by aperis-p         ###   ########.fr       */
+/*   Updated: 2024/01/26 22:58:32 by aperis-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
+
+double time_diff(struct timeval start, struct timeval end)
+{
+	double	result;
+	long	seconds;
+	long	microseconds;
+
+	// if (!start.tv_sec && !start.tv_usec)
+	// {
+	// 	result = start.tv_sec + start.tv_usec;
+	// }
+	seconds = (end.tv_sec - start.tv_sec) * 1e9;
+	microseconds = (end.tv_usec - start.tv_usec) / 1e3;
+	result = seconds + microseconds;
+	return(result);
+}
 
 void run(t_data *data)
 {
@@ -35,7 +51,7 @@ t_health check_philo_health(t_data *data)
 	double current;
 	
 	gettimeofday(&current_time, NULL);
-	current = current_time.tv_sec * 1000.0 + current_time.tv_usec / 1000.0;
+	current = 00.0;
 	head = data->table;
 	result = (t_health){
 		.death_score = 0,
@@ -45,13 +61,14 @@ t_health check_philo_health(t_data *data)
 	{
 		temp = head->next;
 		if(!head->philo.last_meal)
-			head->philo.last_meal = data->simulation_start;
+			head->philo.last_meal = 00.0;
 		if(current - head->philo.last_meal >= data->args.time_to_die)
 			head->philo.state = DEAD;
 		if(head->philo.state == DEAD)
 			result.death_score++;
 		if(head->philo.meals_ate >= data->args.meals_must_eat)
 			result.eat_score++;
+		head = temp;
 	}
 	return (result);
 }
@@ -72,7 +89,7 @@ void start_simulation(t_data *data)
 	struct timeval start;
 	
 	gettimeofday(&start, NULL);
-	data->simulation_start =  start.tv_sec * 1000.0 + start.tv_usec / 1000.0;
+	data->simulation_start =  start;
 	
 	while(!end_conditions(data))
 		run(data);

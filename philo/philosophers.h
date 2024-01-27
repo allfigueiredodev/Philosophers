@@ -64,7 +64,7 @@ typedef struct s_dclist
 typedef struct s_data
 {
 	t_args		args;
-	double		simulation_start;
+	struct		timeval simulation_start;
 	t_dclist	*table;
 } t_data;
 
@@ -85,4 +85,4 @@ void		lst_prev_next(t_dclist **alst, t_dclist *new);
 t_dclist	*lst_new_node(int id);
 void		pick_a_fork(t_data *data, t_philo *philo);
 void		eat(t_data *data, t_philo *philo);
-
+double		time_diff(struct timeval start, struct timeval end);
