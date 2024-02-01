@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/time.h>
+#include <pthread.h>
 
 typedef enum t_bool
 {
@@ -46,9 +47,9 @@ typedef struct s_args
 
 typedef struct s_philo
 {
-	int		philo_id;
-	t_state state;
-	int		meals_ate;
+	int			philo_id;
+	t_state 	state;
+	int			meals_ate;
 	double		last_meal;
 	t_forks		left_fork;
 	t_forks		right_fork;
@@ -66,6 +67,7 @@ typedef struct s_data
 	t_args		args;
 	struct		timeval simulation_start;
 	t_dclist	*table;
+	t_locks		lock;
 } t_data;
 
 typedef struct s_health
@@ -73,6 +75,12 @@ typedef struct s_health
 	int eat_score;
 	int death_score;
 }	t_health;
+
+typedef	struct s_locks
+{
+	pthread_mutex_t	lock_1;
+	pthread_mutex_t	lock_2;
+}	t_locks;
 
 long		philo_atoi(const char *str);
 int			init_philo(t_data *data, char **argv);
@@ -85,4 +93,7 @@ void		lst_prev_next(t_dclist **alst, t_dclist *new);
 t_dclist	*lst_new_node(int id);
 void		pick_a_fork(t_data *data, t_philo *philo);
 void		eat(t_data *data, t_philo *philo);
+void		die(t_data *data, t_philo *philo);
 double		time_diff(struct timeval start, struct timeval end);
+void		set_right_fork(t_data *data);
+void		init_table(t_data *data);

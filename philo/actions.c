@@ -6,7 +6,7 @@
 /*   By: aperis-p <aperis-p@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 13:30:55 by aperis-p          #+#    #+#             */
-/*   Updated: 2024/01/26 22:15:46 by aperis-p         ###   ########.fr       */
+/*   Updated: 2024/01/29 15:01:03 by aperis-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ void	pick_a_fork(t_data *data, t_philo *philo)
 	if (philo->left_fork.available &&
 		philo->right_fork.available)
 	{
+		
 		philo->state = TOOK_A_FORK;
 		philo->left_fork.available = false;
 		philo->right_fork.available = false;
@@ -63,13 +64,13 @@ void	eat(t_data *data, t_philo *philo)
 	time_difference = time_diff(data->simulation_start, ate);
 	// time_difference = ate.tv_sec * 1000.0 + ate.tv_usec / 1000.0;
 	// time_difference = time_difference - data->simulation_start;
-	philo->meals_ate++; 
+	philo->meals_ate++;
 	printf("%s%.2f %d is eating\n%s", GREEN, time_difference, 
 	philo->philo_id ,DFT);
 	usleep(data->args.time_to_eat);
 	gettimeofday(&ate, NULL);
 	// time_difference = ate.tv_sec * 1000.0 + ate.tv_usec / 1000.0;
-	// philo->last_meal = time_difference - data->simulation_start;
+	philo->last_meal = time_diff(data->simulation_start, ate);
 	philo->left_fork.available = true;
 	philo->right_fork.available = true;
 	philo_sleep(data, philo);

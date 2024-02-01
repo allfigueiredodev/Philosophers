@@ -6,27 +6,11 @@
 /*   By: aperis-p <aperis-p@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/18 15:02:31 by aperis-p          #+#    #+#             */
-/*   Updated: 2024/01/26 22:58:32 by aperis-p         ###   ########.fr       */
+/*   Updated: 2024/01/31 21:18:22 by aperis-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
-
-double time_diff(struct timeval start, struct timeval end)
-{
-	double	result;
-	long	seconds;
-	long	microseconds;
-
-	// if (!start.tv_sec && !start.tv_usec)
-	// {
-	// 	result = start.tv_sec + start.tv_usec;
-	// }
-	seconds = (end.tv_sec - start.tv_sec) * 1e9;
-	microseconds = (end.tv_usec - start.tv_usec) / 1e3;
-	result = seconds + microseconds;
-	return(result);
-}
 
 void run(t_data *data)
 {
@@ -40,6 +24,7 @@ void run(t_data *data)
 		pick_a_fork(data, &head->philo);
 		head = temp;
 	}
+	pick_a_fork(data, &head->philo);
 }
 
 t_health check_philo_health(t_data *data)
@@ -60,16 +45,26 @@ t_health check_philo_health(t_data *data)
 	while(head->philo.philo_id != data->args.nbr_of_philos)
 	{
 		temp = head->next;
+		
 		if(!head->philo.last_meal)
 			head->philo.last_meal = 00.0;
-		if(current - head->philo.last_meal >= data->args.time_to_die)
-			head->philo.state = DEAD;
+		if(current - head->philo.last_meal >= data->args.time_to_die && head->philo.state != DEAD)
+			die(data, &head->philo);
 		if(head->philo.state == DEAD)
 			result.death_score++;
 		if(head->philo.meals_ate >= data->args.meals_must_eat)
 			result.eat_score++;
+		
 		head = temp;
 	}
+	if(!head->philo.last_meal)
+		head->philo.last_meal = 00.0;
+	if(current - head->philo.last_meal >= data->args.time_to_die && head->philo.state != DEAD)
+		die(data, &head->philo);
+	if(head->philo.state == DEAD)
+		result.death_score++;
+	if(head->philo.meals_ate >= data->args.meals_must_eat)
+		result.eat_score++;
 	return (result);
 }
 
@@ -84,60 +79,28 @@ int end_conditions(t_data *data)
 	return (0);
 }
 
-void start_simulation(t_data *data)
-{
-	struct timeval start;
-	
-	gettimeofday(&start, NULL);
-	data->simulation_start =  start;
-	
-	while(!end_conditions(data))
-		run(data);
-}
-
-void set_right_fork(t_data *data)
-{
-	t_dclist *head;
-	t_dclist *temp;
-
-	head = data->table;
-	while(!head->philo.right_fork.id)
-	{
-		temp = head->next;
-		head->philo.right_fork.id = head->prev->philo.left_fork.id;
-		head->philo.right_fork.available = true;
-		head = temp;
-	}
-}
-
-void init_table(t_data *data)
-{
-	int total_of_philos;
-	int i;
-
-	total_of_philos = data->args.nbr_of_philos;
-	i = 1;
-	while (i <= total_of_philos)
-	{
-		lst_prev_next(&data->table, lst_new_node(i));
-		i++;
-	}
-	set_right_fork(data);
-}
-
 int main (int argc, char **argv)
 {
 	t_data data;
-	
+	pthread_t health_thread;
+	pthread_t action_thread;
+
+	pthread_mutex_init(&data.lock.lock_1, NULL);
+	pthread_mutex_init(&data.lock.lock_2, NULL);
 	if(argc < 5 || argc > 6 || !init_philo(&data, argv))
 	{
 		printf("%sNot enought arguments!%s\n", RED, DFT);
 		return (0);
 	}
 	init_table(&data);
-	start_simulation(&data);
+	while(!pthread_create(&health_thread, NULL, end_conditions, &data))
+	{
+		pthread_join(health_thread, NULL);
+		pthread_create(&action_thread, NULL, run, &data);
+		pthread_join(action_thread, NULL);
+	}
 }
-		
+
 // 	- number_of_philosophers: The number of philosophers and also the number
 // of forks.
 // 	- time_to_die (in milliseconds): If a philosopher didn’t start eating time_to_die
