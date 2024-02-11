@@ -6,7 +6,7 @@
 /*   By: aperis-p <aperis-p@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/29 15:43:31 by aperis-p          #+#    #+#             */
-/*   Updated: 2024/01/29 15:43:34 by aperis-p         ###   ########.fr       */
+/*   Updated: 2024/02/11 00:31:25 by aperis-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,18 @@ int input_validation(char **argv)
 	return (1);
 }
 
-int init_philo(t_data *data, char **argv)
+int init_philo(t_data *data, int argc, char **argv)
 {
-	init_data(data);	
-	if (input_validation(argv))
+	init_data(data);		
+	if (input_validation(argv) && argc == 5)
+		set_data_args(data, (t_args){
+			.nbr_of_philos = philo_atoi(argv[1]),
+			.time_to_die = philo_atoi(argv[2]),
+			.time_to_eat = philo_atoi(argv[3]),
+			.time_to_sleep = philo_atoi(argv[4]),
+			.meals_must_eat = -1,
+		});
+	else if (input_validation(argv) && argc == 6)
 		set_data_args(data, (t_args){
 			.nbr_of_philos = philo_atoi(argv[1]),
 			.time_to_die = philo_atoi(argv[2]),

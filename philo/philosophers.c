@@ -6,119 +6,86 @@
 /*   By: aperis-p <aperis-p@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/18 15:02:31 by aperis-p          #+#    #+#             */
-/*   Updated: 2024/01/31 21:18:22 by aperis-p         ###   ########.fr       */
+/*   Updated: 2024/02/11 13:38:15 by aperis-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-void run(t_data *data)
+void *run(void *data)
 {
-	t_dclist *head;
-	t_dclist *temp;
+	t_philo *philo;
+	philo = (t_philo *)data;
 	
-	head = data->table;
-	while(head->philo.philo_id != data->args.nbr_of_philos)
+	// check_mtx_return_err(pthread_mutex_lock(&philo->philo_mtx), MTX_LOCK_UNLOCK_DSTY);
+	if(philo->state == DEAD)
 	{
-		temp = head->next;
-		pick_a_fork(data, &head->philo);
-		head = temp;
+		// check_mtx_return_err(pthread_mutex_unlock(&philo->philo_mtx), MTX_LOCK_UNLOCK_DSTY);
+		return (NULL);
 	}
-	pick_a_fork(data, &head->philo);
+	if (philo->philo_id % 2 == 0)
+		usleep(10000);
+	pick_a_fork(philo);
+	// check_mtx_return_err(pthread_mutex_lock(&philo->philo_mtx), MTX_LOCK_UNLOCK_DSTY);
+	if(philo->state == TOOK_BOTH_FORKS)
+		eat(philo);
+	else
+	{
+	// 	check_mtx_return_err(pthread_mutex_unlock(&philo->philo_mtx), MTX_LOCK_UNLOCK_DSTY);
+		return (NULL);
+	}
+	// check_mtx_return_err(pthread_mutex_unlock(&philo->philo_mtx), MTX_LOCK_UNLOCK_DSTY);
+	philo_sleep(philo);
+	return (NULL);
 }
 
-t_health check_philo_health(t_data *data)
+void simulation_runner(t_data *data)
 {
-	t_health result;
+	int i;
+	int j;
 	t_dclist *head;
 	t_dclist *temp;
-	struct timeval current_time;
-	double current;
-	
-	gettimeofday(&current_time, NULL);
-	current = 00.0;
+
+	i = 0;
+	j = 0;
 	head = data->table;
-	result = (t_health){
-		.death_score = 0,
-		.eat_score = 0
-	};
-	while(head->philo.philo_id != data->args.nbr_of_philos)
+	// check_mtx_return_err(pthread_mutex_lock(&data->data_mtx), MTX_LOCK_UNLOCK_DSTY);
+	while(i != data->args.nbr_of_philos && !data->health_status)
+	{
+		// check_mtx_return_err(pthread_mutex_unlock(&data->data_mtx), MTX_LOCK_UNLOCK_DSTY);
+		temp = head->next;
+		check_thd_return_err(pthread_create(&head->philo.tid, NULL, run, &head->philo), THD_CREATE);
+		// check_thd_return_err(pthread_detach(head->philo.tid), THD_DETACH);
+		head = temp;
+		i++;
+		j++;
+	}
+	i = 0;
+	head = data->table;
+	while(i++ != j)
 	{
 		temp = head->next;
-		
-		if(!head->philo.last_meal)
-			head->philo.last_meal = 00.0;
-		if(current - head->philo.last_meal >= data->args.time_to_die && head->philo.state != DEAD)
-			die(data, &head->philo);
-		if(head->philo.state == DEAD)
-			result.death_score++;
-		if(head->philo.meals_ate >= data->args.meals_must_eat)
-			result.eat_score++;
-		
+		check_thd_return_err(pthread_join(head->philo.tid, NULL), THD_JOIN);
 		head = temp;
 	}
-	if(!head->philo.last_meal)
-		head->philo.last_meal = 00.0;
-	if(current - head->philo.last_meal >= data->args.time_to_die && head->philo.state != DEAD)
-		die(data, &head->philo);
-	if(head->philo.state == DEAD)
-		result.death_score++;
-	if(head->philo.meals_ate >= data->args.meals_must_eat)
-		result.eat_score++;
-	return (result);
-}
-
-int end_conditions(t_data *data)
-{
-	t_health current_health;
-
-	current_health = check_philo_health(data);
-	if(current_health.death_score == data->args.nbr_of_philos
-		|| current_health.eat_score == data->args.nbr_of_philos)
-		return (1);
-	return (0);
 }
 
 int main (int argc, char **argv)
 {
-	t_data data;
-	pthread_t health_thread;
-	pthread_t action_thread;
+	t_data 		*data;
+	pthread_t 	health_thread;
 
-	pthread_mutex_init(&data.lock.lock_1, NULL);
-	pthread_mutex_init(&data.lock.lock_2, NULL);
-	if(argc < 5 || argc > 6 || !init_philo(&data, argv))
+	data = get_data();
+	if(argc < 5 || argc > 6 || !init_philo(data, argc, argv))
 	{
 		printf("%sNot enought arguments!%s\n", RED, DFT);
 		return (0);
 	}
-	init_table(&data);
-	while(!pthread_create(&health_thread, NULL, end_conditions, &data))
+	init_table(data);
+	while (!data->health_status)
 	{
-		pthread_join(health_thread, NULL);
-		pthread_create(&action_thread, NULL, run, &data);
-		pthread_join(action_thread, NULL);
+		check_thd_return_err(pthread_create(&health_thread, NULL, end_conditions, data), THD_CREATE);
+		simulation_runner(data);
+		check_thd_return_err(pthread_join(health_thread, NULL), THD_JOIN);
 	}
 }
-
-// 	- number_of_philosophers: The number of philosophers and also the number
-// of forks.
-// 	- time_to_die (in milliseconds): If a philosopher didn’t start eating time_to_die
-// milliseconds since the beginning of their last meal or the beginning of the simulation, they die.
-// 	- time_to_eat (in milliseconds): The time it takes for a philosopher to eat.
-// During that time, they will need to hold two forks.
-// 	- time_to_sleep (in milliseconds): The time a philosopher will spend sleeping.
-// 	- number_of_times_each_philosopher_must_eat (optional argument): If all
-// philosophers have eaten at least number_of_times_each_philosopher_must_eat
-// times, the simulation stops. If not specified, the simulation stops when a
-// philosopher dies.// 	- number_of_philosophers: The number of philosophers and also the number
-// of forks.
-// 	- time_to_die (in milliseconds): If a philosopher didn’t start eating time_to_die
-// milliseconds since the beginning of their last meal or the beginning of the simulation, they die.
-// 	- time_to_eat (in milliseconds): The time it takes for a philosopher to eat.
-// During that time, they will need to hold two forks.
-// 	- time_to_sleep (in milliseconds): The time a philosopher will spend sleeping.
-// 	- number_of_times_each_philosopher_must_eat (optional argument): If all
-// philosophers have eaten at least number_of_times_each_philosopher_must_eat
-// times, the simulation stops. If not specified, the simulation stops when a
-// philosopher dies.

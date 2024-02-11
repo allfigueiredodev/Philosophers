@@ -6,86 +6,91 @@
 /*   By: aperis-p <aperis-p@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 13:30:55 by aperis-p          #+#    #+#             */
-/*   Updated: 2024/01/29 15:01:03 by aperis-p         ###   ########.fr       */
+/*   Updated: 2024/02/11 11:51:51 by aperis-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-void	pick_a_fork(t_data *data, t_philo *philo)
+void	pick_a_fork(t_philo *philo)
 {
+	t_data *data;
 	struct timeval pick_up;
-	double time_difference;
+	long time_difference;
 	
+	data = get_data();
+	check_mtx_return_err(pthread_mutex_lock(&philo->left_fork->mtx_fork), MTX_LOCK_UNLOCK_DSTY);
 	gettimeofday(&pick_up, NULL);
 	time_difference = time_diff(data->simulation_start, pick_up);
-	// time_difference = pick_up.tv_sec * 1000.0 + pick_up.tv_usec / 1000.0;
-	// time_difference = time_difference - data->simulation_start;
-	if (philo->left_fork.available &&
-		philo->right_fork.available)
+	printf("%s%ld %d has taken a fork\n%s", YELLOW, time_difference,
+		philo->philo_id ,DFT);
+	if (data->args.nbr_of_philos > 1)
 	{
-		
-		philo->state = TOOK_A_FORK;
-		philo->left_fork.available = false;
-		philo->right_fork.available = false;
-		printf("%s%.2f %d has taken a fork\n%s", RED, time_difference, 
+		check_mtx_return_err(pthread_mutex_lock(&get_right_fork(philo)->mtx_fork), MTX_LOCK_UNLOCK_DSTY);
+		gettimeofday(&pick_up, NULL);
+		time_difference = time_diff(data->simulation_start, pick_up);
+		printf("%s%ld %d has taken a fork\n%s", YELLOW, time_difference,
 			philo->philo_id ,DFT);
-		eat(data, philo);
+		// check_mtx_return_err(pthread_mutex_lock(&philo->philo_mtx), MTX_LOCK_UNLOCK_DSTY);
+		philo->state = TOOK_BOTH_FORKS;
+		// check_mtx_return_err(pthread_mutex_unlock(&philo->philo_mtx), MTX_LOCK_UNLOCK_DSTY);
 	}
+	else if (data->args.nbr_of_philos == 1)
+		usleep(data->args.time_to_die * 1000);
 }
 
-void	philo_sleep(t_data *data, t_philo *philo)
+void	philo_sleep(t_philo *philo)
 {
+	t_data *data;
 	struct timeval sleep_time;
-	double time_difference;
+	long time_difference;
 	
+	data = get_data();
 	gettimeofday(&sleep_time, NULL);
 	time_difference = time_diff(data->simulation_start, sleep_time);
-	// time_difference = sleep_time.tv_sec * 1000.0 + sleep_time.tv_usec / 1000.0;
-	// time_difference = time_difference - data->simulation_start;
-	printf("%s%.2f %d is sleeping\n%s", GREEN, time_difference, 
+	printf("%s%ld %d is sleeping\n%s", BLUE, time_difference, 
 		philo->philo_id ,DFT);
 	philo->state = SLEEPING;
-	usleep(data->args.time_to_sleep);
+	usleep(data->args.time_to_sleep * 1000);
 	gettimeofday(&sleep_time, NULL);
-	// time_difference = sleep_time.tv_sec * 1000.0 + sleep_time.tv_usec / 1000.0;
-	// time_difference = time_difference - data->simulation_start;
+	time_difference = time_diff(data->simulation_start, sleep_time);
 	philo->state = THINKING;
-	printf("%s%.2f %d is thinking\n%s", BLUE, time_difference, 
+	printf("%s%ld %d is thinking\n%s", GREEN, time_difference, 
 	philo->philo_id, DFT);
 }
 
-void	eat(t_data *data, t_philo *philo)
+void	eat(t_philo *philo)
 {
+	t_data *data;
 	struct timeval ate;
-	double time_difference;
+	long time_difference;
 	
+	data = get_data();
 	gettimeofday(&ate, NULL);
 	time_difference = time_diff(data->simulation_start, ate);
-	// time_difference = ate.tv_sec * 1000.0 + ate.tv_usec / 1000.0;
-	// time_difference = time_difference - data->simulation_start;
 	philo->meals_ate++;
-	printf("%s%.2f %d is eating\n%s", GREEN, time_difference, 
-	philo->philo_id ,DFT);
-	usleep(data->args.time_to_eat);
+	printf("philo %d ate: %d times\n", philo->philo_id, philo->meals_ate);
+	printf("%s%ld %d is eating\n%s", RED, time_difference,
+		philo->philo_id ,DFT);
+	usleep(data->args.time_to_eat * 1000);
 	gettimeofday(&ate, NULL);
-	// time_difference = ate.tv_sec * 1000.0 + ate.tv_usec / 1000.0;
 	philo->last_meal = time_diff(data->simulation_start, ate);
-	philo->left_fork.available = true;
-	philo->right_fork.available = true;
-	philo_sleep(data, philo);
+	check_mtx_return_err(pthread_mutex_unlock(&philo->left_fork->mtx_fork), MTX_LOCK_UNLOCK_DSTY);
+	check_mtx_return_err(pthread_mutex_unlock(&get_right_fork(philo)->mtx_fork), MTX_LOCK_UNLOCK_DSTY);
 }	
 
-void	die(t_data *data, t_philo *philo)
+void	die(t_philo *philo)
 {
-	struct timeval death_time;
-	double time_difference;
+	t_data	*data;
+	struct	timeval death_time;
+	long	time_difference;
 	
+	data = get_data();
 	gettimeofday(&death_time, NULL);
+	// check_mtx_return_err(pthread_mutex_lock(&philo->philo_mtx), MTX_LOCK_UNLOCK_DSTY);
 	time_difference = time_diff(data->simulation_start, death_time);
-	// time_difference = death_time.tv_sec * 1000.0 + death_time.tv_usec / 1000.0;
-	// time_difference = time_difference - data->simulation_start;
-	printf("%s%.2f %d died\n%s", MAGENTA, time_difference, 
-	philo->philo_id ,DFT);
+	printf("%s%ld %d died\n%s", MAGENTA, time_difference, 
+		philo->philo_id ,DFT);
 	philo->state = DEAD;
+	// check_mtx_return_err(pthread_mutex_unlock(&philo->philo_mtx), MTX_LOCK_UNLOCK_DSTY);
 }

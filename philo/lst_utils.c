@@ -6,7 +6,7 @@
 /*   By: aperis-p <aperis-p@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 12:40:35 by aperis-p          #+#    #+#             */
-/*   Updated: 2024/01/26 20:20:40 by aperis-p         ###   ########.fr       */
+/*   Updated: 2024/02/11 01:46:15 by aperis-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,17 +76,38 @@ void	lst_prev_next(t_dclist **alst, t_dclist *new)
 		}
 	}
 }
+
+t_forks *get_right_fork(t_philo *philo)
+{
+	t_data	 *data;
+	t_dclist *head;
+
+	data = get_data();
+	head = data->table;
+	while (head->philo.philo_id != philo->philo_id)
+		head = head->next;
+	return (head->prev->philo.left_fork);
+}
 t_dclist	*lst_new_node(int id)
 {
 	t_dclist	*node;
+	t_forks		*fork;
 
 	node = (t_dclist *)malloc(sizeof(t_dclist));
 	if (!node)
 		return (NULL);
+	fork = (t_forks *)malloc(sizeof(t_forks));
+	if (!fork)
+		return (NULL);
 	node->philo.philo_id = id;
-	node->philo.left_fork.id = id;
-	node->philo.left_fork.available = true;
+	node->philo.left_fork = fork;
+	node->philo.left_fork->id = id;
+	check_mtx_return_err(pthread_mutex_init(
+			&node->philo.left_fork->mtx_fork, NULL), MTX_INIT);
 	node->philo.state = THINKING;
+	check_mtx_return_err(pthread_mutex_init(
+			&node->philo.philo_mtx, NULL), MTX_INIT);
+	node->philo.meals_ate = 0;
 	node->prev = node;
 	node->next = node;
 	return (&*node);
