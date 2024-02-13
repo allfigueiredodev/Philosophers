@@ -6,7 +6,7 @@
 /*   By: aperis-p <aperis-p@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 12:40:35 by aperis-p          #+#    #+#             */
-/*   Updated: 2024/02/11 01:46:15 by aperis-p         ###   ########.fr       */
+/*   Updated: 2024/02/12 15:31:04 by aperis-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,7 @@ t_dclist	*lst_new_node(int id)
 	node->philo.philo_id = id;
 	node->philo.left_fork = fork;
 	node->philo.left_fork->id = id;
+	node->philo.left_fork->available = true;
 	check_mtx_return_err(pthread_mutex_init(
 			&node->philo.left_fork->mtx_fork, NULL), MTX_INIT);
 	node->philo.state = THINKING;

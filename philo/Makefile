@@ -1,10 +1,10 @@
 NAME = philo
 MAKE = make
 CC = cc
-# FLAGS = -Wall -Werror -Wextra -fsanitize=thread -g3
-FLAGS = -Wall -Werror -Wextra -g3
+# FLAGS = -Wall -Werror -Wextra -pthread -fsanitize=thread -g3
+FLAGS = -Wall -Werror -Wextra -pthread -g3
 SRC = philosophers.c philosophers_utils.c philosophers_init.c lst_utils.c \
-actions.c philosophers_init2.c philosophers_health_monitor.c
+actions.c philosophers_init2.c philosophers_health_monitor.c philosophers_time_utils.c
 
 OBJS = $(SRC:.c=.o)
 
@@ -17,7 +17,7 @@ $(NAME): $(OBJS)
 	$(CC) $(FLAGS) -c $< -o $(<:.c=.o) -I ./
 
 valgrind: all
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s -pthread ./philo 5 800 400 200 10
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s --tool=helgrind -pthread ./philo 5 800 400 200 10
 
 clean:
 	rm -rf $(OBJS)

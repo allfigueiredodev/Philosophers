@@ -6,7 +6,7 @@
 /*   By: aperis-p <aperis-p@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 12:40:55 by aperis-p          #+#    #+#             */
-/*   Updated: 2024/02/11 02:21:35 by aperis-p         ###   ########.fr       */
+/*   Updated: 2024/02/12 13:44:26 by aperis-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,18 +73,6 @@ void get_start_time(t_data *data)
 	data->simulation_start =  start;
 }
 
-long time_diff(struct timeval start, struct timeval end)
-{
-	long	result;	
-	long	seconds;
-	long	microseconds;
-
-	seconds = (end.tv_sec - start.tv_sec) * 1000;
-	microseconds = (end.tv_usec - start.tv_usec) / 1000;
-	result = seconds + microseconds;
-	return(result);
-}
-
 long	philo_atoi(const char *str)
 {
 	int		i;
@@ -109,4 +97,26 @@ long	philo_atoi(const char *str)
 		i++;
 	}
 	return (sign * result);
+}
+void free_all(t_data *data)
+{
+	t_dclist *head;
+	t_dclist *temp;
+
+	head = data->table;
+	pthread_mutex_destroy(&data->data_mtx);
+	while(head->philo.philo_id != data->args.nbr_of_philos)
+	{
+		temp = head -> next;
+		pthread_mutex_destroy(&head->philo.philo_mtx);
+		pthread_mutex_destroy(&head->philo.left_fork->mtx_fork);
+		free(head->philo.left_fork);
+		free(head);
+		head = temp;
+	}
+	pthread_mutex_destroy(&data->table->philo.philo_mtx);
+	pthread_mutex_destroy(&head->philo.left_fork->mtx_fork);
+	free(head->philo.left_fork);
+	free(head);
+	printf("All data freed\n");
 }
