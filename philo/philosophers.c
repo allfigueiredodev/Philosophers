@@ -6,7 +6,7 @@
 /*   By: aperis-p <aperis-p@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/18 15:02:31 by aperis-p          #+#    #+#             */
-/*   Updated: 2024/02/14 04:24:46 by aperis-p         ###   ########.fr       */
+/*   Updated: 2024/02/14 07:54:24 by aperis-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,12 @@ void *run(void *data)
 	
 	philo = (t_philo *)data;
 	main_data = get_data();
-	while(!lock_return(&main_data->data_mtx, &main_data->health_status))
+	while(!main_data->health_status)
 	{
 		check_mtx_return_err(pthread_mutex_lock(&philo->philo_mtx), MTX_LOCK_UNLOCK_DSTY);
-		if (philo->philo_id % 2 == 0)
-			usleep(10000);
-		check_philo_health(philo);
+		// if (philo->philo_id % 2 == 0)
+		// 	usleep(10000);
+		// check_philo_health(philo);
 		pick_a_fork(philo);
 		if(philo->state == TOOK_BOTH_FORKS)
 		{
@@ -43,11 +43,12 @@ void *run(void *data)
 		}
 		else
 		{
-			check_philo_health(philo);
+			// check_philo_health(philo);
 			check_mtx_return_err(pthread_mutex_unlock(&philo->philo_mtx), MTX_LOCK_UNLOCK_DSTY);
 			return (NULL);
 		}
 		check_mtx_return_err(pthread_mutex_unlock(&philo->philo_mtx), MTX_LOCK_UNLOCK_DSTY);
+		// check_philo_health(philo);
 	}
 	return (NULL);
 }
@@ -67,6 +68,7 @@ void simulation_runner(t_data *data)
 		head = temp;
 		i++;
 	}
+	check_philo_health(data);
 	i = 0;
 	while(i != data->args.nbr_of_philos)
 	{

@@ -105,7 +105,7 @@ t_forks		*get_right_fork(t_philo *philo);
 t_data		*get_data(void);
 void		check_thd_return_err(int err, t_thd_mtx_type type);
 void		check_mtx_return_err(int err, t_thd_mtx_type type);
-void		check_philo_health(t_philo *philo);
+void		check_philo_health(t_data *data);
 void		end_conditions(t_data *data);
 // void		c_usleep(long ms);
 void		free_all(t_data *data);
