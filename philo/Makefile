@@ -4,7 +4,7 @@ CC = cc
 FLAGS = -Wall -Werror -Wextra -pthread -fsanitize=thread -g3
 SRC = philosophers.c philosophers_utils.c philosophers_init.c lst_utils.c \
 actions.c philosophers_init2.c philosophers_health_monitor.c philosophers_time_utils.c \
-get_locks.c
+get_locks.c actions_utils.c
 
 OBJS = $(SRC:.c=.o)
 

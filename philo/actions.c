@@ -6,30 +6,11 @@
 /*   By: aperis-p <aperis-p@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 13:30:55 by aperis-p          #+#    #+#             */
-/*   Updated: 2024/02/14 17:13:59 by aperis-p         ###   ########.fr       */
+/*   Updated: 2024/02/14 18:19:38 by aperis-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
-
-void print_validator(t_data *data, long time, int id, t_state state)
-{
-	if(!lock_bool_return(&data->data_mtx, &data->health_status))
-	{
-		check_mtx_return_err(pthread_mutex_lock(&data->print_mtx), MTX_LOCK_UNLOCK_DSTY);
-		if (state == TOOK_A_FORK)
-			printf("%s%ld %d has taken a fork\n%s", YELLOW, time, id, DFT);
-		else if (state == EATING)
-			printf("%s%ld %d is eating\n%s", RED, time, id, DFT);
-		else if (state == SLEEPING)
-			printf("%s%ld %d is sleeping\n%s", BLUE, time, id, DFT);
-		else if (state == THINKING)
-			printf("%s%ld %d is thinking\n%s", GREEN, time, id, DFT);
-		else if (state == DEAD)
-			printf("%s%ld %d died\n%s", MAGENTA, time, id, DFT);
-		check_mtx_return_err(pthread_mutex_unlock(&data->print_mtx), MTX_LOCK_UNLOCK_DSTY);
-	}
-}
 
 void	pick_a_fork(t_philo *philo)
 {
@@ -38,23 +19,13 @@ void	pick_a_fork(t_philo *philo)
 	long time_difference;
 	
 	data = get_data();
-	if (philo->philo_id % 2 == 0)
-		check_mtx_return_err(pthread_mutex_lock(
-			&get_right_fork(philo)->mtx_fork), MTX_LOCK_UNLOCK_DSTY);
-	else
-		check_mtx_return_err(pthread_mutex_lock(&philo->left_fork->mtx_fork),
-			 MTX_LOCK_UNLOCK_DSTY);
+	fork_selection(philo, 0);
 	gettimeofday(&pick_up, NULL);
 	time_difference = time_diff(data->simulation_start, pick_up);
 	print_validator(data, time_difference, philo->philo_id, TOOK_A_FORK);
 	if (data->args.nbr_of_philos > 1)
 	{
-		if (philo->philo_id % 2 == 0)
-			check_mtx_return_err(pthread_mutex_lock(&philo->left_fork->mtx_fork),
-				MTX_LOCK_UNLOCK_DSTY);
-		else	
-			check_mtx_return_err(pthread_mutex_lock(&get_right_fork(philo)->mtx_fork),
-				MTX_LOCK_UNLOCK_DSTY);
+		fork_selection(philo, 1);
 		gettimeofday(&pick_up, NULL);
 		time_difference = time_diff(data->simulation_start, pick_up);
 		print_validator(data, time_difference, philo->philo_id, TOOK_A_FORK);

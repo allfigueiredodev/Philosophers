@@ -1,6 +1,5 @@
-// #define YE_BLUE     "\033[34;43m" yellow background with blue text
-#define BLUE_GREEN     "\033[32;44m"
-#define MAG_YE     "\033[33;45m"
+#define BLUE_GREEN  "\033[32;44m"
+#define MAG_YE     	"\033[33;45m"
 #define RED     	"\033[1;31m"
 #define GREEN   	"\033[1;32m"
 #define YELLOW 		"\033[1;33m"
@@ -91,7 +90,7 @@ typedef struct s_data
 long		philo_atoi(const char *str);
 int			init_philo(t_data *data, int argc, char **argv);
 int			input_validation(char **argv);
-void		init_data(t_data *data); // prevents conditional jumps
+void		init_data(t_data *data);
 void		set_data_args(t_data *data, t_args args);
 int			dc_lstsize(t_dclist *lst);
 t_dclist	*dc_lst_last(t_dclist *lst);
@@ -114,3 +113,5 @@ long		lock_long_return(pthread_mutex_t *mutex, long *value);
 int			lock_int_return(pthread_mutex_t *mutex, int *value);
 t_bool		lock_bool_return(pthread_mutex_t *mutex, t_bool *value);
 t_state		lock_state_return(pthread_mutex_t *mutex, t_state *value);
+void		fork_selection(t_philo *philo, int flag);
+void		print_validator(t_data *data, long time, int id, t_state state);

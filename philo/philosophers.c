@@ -6,7 +6,7 @@
 /*   By: aperis-p <aperis-p@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/18 15:02:31 by aperis-p          #+#    #+#             */
-/*   Updated: 2024/02/14 17:23:59 by aperis-p         ###   ########.fr       */
+/*   Updated: 2024/02/14 18:49:38 by aperis-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,4 +82,3 @@ int main (int argc, char **argv)
 	free_all(data);
 	printf("THE END\n");
 }
-
