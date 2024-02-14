@@ -6,7 +6,7 @@
 /*   By: aperis-p <aperis-p@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/18 15:02:31 by aperis-p          #+#    #+#             */
-/*   Updated: 2024/02/14 11:06:06 by aperis-p         ###   ########.fr       */
+/*   Updated: 2024/02/14 17:23:59 by aperis-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,19 +21,22 @@ void *run(void *data)
 	main_data = get_data();
 	while(!lock_bool_return(&main_data->data_mtx, &main_data->health_status))
 	{
-		check_mtx_return_err(pthread_mutex_lock(&philo->philo_mtx), MTX_LOCK_UNLOCK_DSTY);
-		pick_a_fork(philo);
-		if(philo->state == TOOK_BOTH_FORKS)
+		
+		if(!lock_bool_return(&main_data->data_mtx, &main_data->health_status))
+			pick_a_fork(philo);
+		if(lock_state_return(&philo->philo_mtx, &philo->state) == TOOK_BOTH_FORKS)
 		{
+			if(lock_bool_return(&main_data->data_mtx, &main_data->health_status))
+			{
+				check_mtx_return_err(pthread_mutex_unlock(&philo->left_fork->mtx_fork), MTX_LOCK_UNLOCK_DSTY);
+				check_mtx_return_err(pthread_mutex_unlock(&get_right_fork(philo)->mtx_fork), MTX_LOCK_UNLOCK_DSTY);
+				return (NULL);
+			}
 			eat(philo);
 			philo_sleep(philo);		
 		}
 		else
-		{
-			check_mtx_return_err(pthread_mutex_unlock(&philo->philo_mtx), MTX_LOCK_UNLOCK_DSTY);
 			return (NULL);
-		}
-		check_mtx_return_err(pthread_mutex_unlock(&philo->philo_mtx), MTX_LOCK_UNLOCK_DSTY);
 	}
 	return (NULL);
 }
@@ -79,3 +82,4 @@ int main (int argc, char **argv)
 	free_all(data);
 	printf("THE END\n");
 }
+

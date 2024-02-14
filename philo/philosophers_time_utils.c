@@ -6,7 +6,7 @@
 /*   By: aperis-p <aperis-p@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 12:40:55 by aperis-p          #+#    #+#             */
-/*   Updated: 2024/02/13 22:29:42 by aperis-p         ###   ########.fr       */
+/*   Updated: 2024/02/14 14:25:59 by aperis-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,11 +32,11 @@ struct timeval curr_time(void)
 	return (temp);
 }
 
-// void    c_usleep(long ms)
-// {
-// 	struct timeval start;
+void    c_usleep(long ms)
+{
+	struct timeval start;
 	
-// 	gettimeofday(&start, NULL);
-//     while (ms > time_diff(start, curr_time()))
-//         usleep(100);
-// }
+	gettimeofday(&start, NULL);
+    while (ms > time_diff(start, curr_time()))
+        usleep(100);
+}

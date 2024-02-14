@@ -6,7 +6,7 @@
 /*   By: aperis-p <aperis-p@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 12:40:35 by aperis-p          #+#    #+#             */
-/*   Updated: 2024/02/12 15:31:04 by aperis-p         ###   ########.fr       */
+/*   Updated: 2024/02/14 17:21:06 by aperis-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,7 @@ t_forks *get_right_fork(t_philo *philo)
 		head = head->next;
 	return (head->prev->philo.left_fork);
 }
+
 t_dclist	*lst_new_node(int id)
 {
 	t_dclist	*node;

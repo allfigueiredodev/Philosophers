@@ -83,6 +83,7 @@ typedef struct s_data
 	struct			timeval simulation_start;
 	t_dclist		*table;
 	pthread_mutex_t data_mtx;
+	pthread_mutex_t print_mtx;
 	t_bool			health_status;
 	int				eat_score;
 } t_data;
@@ -108,15 +109,8 @@ void		check_thd_return_err(int err, t_thd_mtx_type type);
 void		check_mtx_return_err(int err, t_thd_mtx_type type);
 void		check_philo_health(t_data *data);
 void		end_conditions(t_data *data);
-// void		c_usleep(long ms);
 void		free_all(t_data *data);
 long		lock_long_return(pthread_mutex_t *mutex, long *value);
 int			lock_int_return(pthread_mutex_t *mutex, int *value);
 t_bool		lock_bool_return(pthread_mutex_t *mutex, t_bool *value);
-
-
-
-
-
-
-
+t_state		lock_state_return(pthread_mutex_t *mutex, t_state *value);

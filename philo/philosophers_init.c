@@ -6,7 +6,7 @@
 /*   By: aperis-p <aperis-p@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/29 15:43:31 by aperis-p          #+#    #+#             */
-/*   Updated: 2024/02/11 00:31:25 by aperis-p         ###   ########.fr       */
+/*   Updated: 2024/02/14 17:22:12 by aperis-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void set_data_args(t_data *data, t_args args)
 	(&data->args)->meals_must_eat = args.meals_must_eat;
 }
 
-void init_data(t_data *data) // prevents conditional jumps
+void init_data(t_data *data)
 {
 	memset(data, 0, sizeof(t_data));
 	(&data->args)->nbr_of_philos = 0;
