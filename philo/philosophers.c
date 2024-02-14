@@ -6,21 +6,11 @@
 /*   By: aperis-p <aperis-p@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/18 15:02:31 by aperis-p          #+#    #+#             */
-/*   Updated: 2024/02/14 07:54:24 by aperis-p         ###   ########.fr       */
+/*   Updated: 2024/02/14 11:06:06 by aperis-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
-
-t_bool	lock_return(pthread_mutex_t *mutex, t_bool *value)
-{
-	t_bool	ret;
-
-	check_mtx_return_err(pthread_mutex_lock(mutex), MTX_LOCK_UNLOCK_DSTY);
-	ret = *value;
-	check_mtx_return_err(pthread_mutex_unlock(mutex), MTX_LOCK_UNLOCK_DSTY);
-	return (ret);
-}
 
 void *run(void *data)
 {
@@ -29,12 +19,9 @@ void *run(void *data)
 	
 	philo = (t_philo *)data;
 	main_data = get_data();
-	while(!main_data->health_status)
+	while(!lock_bool_return(&main_data->data_mtx, &main_data->health_status))
 	{
 		check_mtx_return_err(pthread_mutex_lock(&philo->philo_mtx), MTX_LOCK_UNLOCK_DSTY);
-		// if (philo->philo_id % 2 == 0)
-		// 	usleep(10000);
-		// check_philo_health(philo);
 		pick_a_fork(philo);
 		if(philo->state == TOOK_BOTH_FORKS)
 		{
@@ -43,12 +30,10 @@ void *run(void *data)
 		}
 		else
 		{
-			// check_philo_health(philo);
 			check_mtx_return_err(pthread_mutex_unlock(&philo->philo_mtx), MTX_LOCK_UNLOCK_DSTY);
 			return (NULL);
 		}
 		check_mtx_return_err(pthread_mutex_unlock(&philo->philo_mtx), MTX_LOCK_UNLOCK_DSTY);
-		// check_philo_health(philo);
 	}
 	return (NULL);
 }

@@ -26,6 +26,7 @@ typedef enum t_bool
 
 typedef enum t_state
 {
+	TOOK_A_FORK,
 	TOOK_BOTH_FORKS,
 	EATING,
 	SLEEPING,
@@ -65,7 +66,7 @@ typedef struct s_philo
 	pthread_mutex_t	philo_mtx;
 	pthread_t		tid;
 	int				meals_ate;
-	double			last_meal;
+	long			last_meal;
 	t_forks			*left_fork;
 } t_philo;
 
@@ -109,6 +110,12 @@ void		check_philo_health(t_data *data);
 void		end_conditions(t_data *data);
 // void		c_usleep(long ms);
 void		free_all(t_data *data);
+long		lock_long_return(pthread_mutex_t *mutex, long *value);
+int			lock_int_return(pthread_mutex_t *mutex, int *value);
+t_bool		lock_bool_return(pthread_mutex_t *mutex, t_bool *value);
+
+
+
 
 
 
