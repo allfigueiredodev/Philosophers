@@ -1,7 +1,7 @@
 NAME = philo
 MAKE = make
 CC = cc
-FLAGS = -Wall -Werror -Wextra -pthread -fsanitize=thread -g3
+FLAGS = -Wall -Werror -Wextra -pthread -g3 #-fsanitize=thread
 SRC = philosophers.c philosophers_utils.c philosophers_init.c lst_utils.c \
 actions.c philosophers_init2.c philosophers_health_monitor.c philosophers_time_utils.c \
 get_locks.c actions_utils.c

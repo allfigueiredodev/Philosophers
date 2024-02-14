@@ -6,20 +6,20 @@
 /*   By: aperis-p <aperis-p@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/29 15:45:16 by aperis-p          #+#    #+#             */
-/*   Updated: 2024/02/14 17:22:16 by aperis-p         ###   ########.fr       */
+/*   Updated: 2024/02/14 19:32:01 by aperis-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-void init_table(t_data *data)
+void	init_table(t_data *data)
 {
-	int total_of_philos;
-	int i;
+	int	total_of_philos;
+	int	i;
 
 	total_of_philos = data->args.nbr_of_philos;
-	check_mtx_return_err(pthread_mutex_init(&data->data_mtx, NULL), MTX_INIT);
-	check_mtx_return_err(pthread_mutex_init(&data->print_mtx, NULL), MTX_INIT);
+	pthread_mutex_init(&data->data_mtx, NULL);
+	pthread_mutex_init(&data->print_mtx, NULL);
 	data->health_status = false;
 	gettimeofday(&data->simulation_start, NULL);
 	i = 1;
