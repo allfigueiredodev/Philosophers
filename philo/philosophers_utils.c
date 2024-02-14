@@ -6,7 +6,7 @@
 /*   By: aperis-p <aperis-p@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 12:40:55 by aperis-p          #+#    #+#             */
-/*   Updated: 2024/02/12 13:44:26 by aperis-p         ###   ########.fr       */
+/*   Updated: 2024/02/14 01:46:35 by aperis-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,14 @@ void check_mtx_return_err(int err, t_thd_mtx_type type)
 		printf("%sThe current thread does not hold a lock on mutex.%s\n", BLUE_GREEN, DFT);	
 	else if (err == EBUSY && type == MTX_LOCK_UNLOCK_DSTY)
 		printf("%sMutex is locked.%s\n", BLUE_GREEN, DFT);
+	else if (err == ENOTRECOVERABLE && type == MTX_LOCK_UNLOCK_DSTY)
+		printf("%sThe state protected by the mutex is not recoverable.%s\n", BLUE_GREEN, DFT);
+	else if (err == EOWNERDEAD && type == MTX_LOCK_UNLOCK_DSTY)
+		printf("%sThe mutex is a robust mutex and the process containing the \
+              previous owning thread terminated while holding the mutex \
+              lock. The mutex lock shall be acquired by the calling \
+              thread and it is up to the new owner to make the state \
+              consistent.%s\n", BLUE_GREEN, DFT);
 }
 
 void check_thd_return_err(int err, t_thd_mtx_type type)
@@ -114,8 +122,6 @@ void free_all(t_data *data)
 		free(head);
 		head = temp;
 	}
-	pthread_mutex_destroy(&data->table->philo.philo_mtx);
-	pthread_mutex_destroy(&head->philo.left_fork->mtx_fork);
 	free(head->philo.left_fork);
 	free(head);
 	printf("All data freed\n");
